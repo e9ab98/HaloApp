@@ -16,7 +16,11 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
+    iosArm64()
+    iosSimulatorArm64()
+
+    task("testClasses")
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -41,6 +45,21 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.animation)
+            implementation(compose.material3)
+
+            implementation(libs.compose.navigation)
+
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.androidx.datastore.preferences)
+
+            api(libs.koin.core)
+            api(libs.koin.compose)
+            api(libs.coil3)
+            api(libs.coil3.network)
+
+            implementation(libs.system.ui.controller)
+            implementation(libs.accompanist.permissions)
         }
     }
 }
@@ -71,8 +90,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
