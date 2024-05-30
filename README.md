@@ -8,10 +8,10 @@ HaloApp应用程序的文档！
 
 ## 功能✨
 
-| Feature        | Status        |
-| -------------- | ------------- |
-| Login, Sign Up | ✔️ Implemented |
-| Home           | ✔️ Implemented |
+| Feature | Status        |
+| ------- | ------------- |
+| Login   | ✔️ Implemented |
+| Home    | ✔️ Implemented |
 
 ## 技术栈📚
 
@@ -27,8 +27,13 @@ HaloApp应用程序的文档！
 - Kotest
 - Fake Data
 
-
-
 ## 许可证
 
+[![license](https://img.shields.io/github/license/e9ab98/HaloApp)](https://github.com/e0ab98/HaloApp/blob/main/LICENSE)
+
+
 HaloApp 使用 GPL-v3.0 协议开源，请遵守开源协议。https://github.com/e0ab98/HaloApp/blob/main/LICENSE)
+
+## 赞助
+
+如果 Halo 对你有帮助，欢迎[赞助我](https://afdian.net/a/e9ab98)
