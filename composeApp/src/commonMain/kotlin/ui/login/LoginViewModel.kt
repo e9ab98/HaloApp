@@ -24,13 +24,15 @@ class LoginViewModel : ViewModel(){
             is LoginEvent.OnUpdateNameRegister -> {
 
             }
-
+            is LoginEvent.OnUpdateUrlLogin -> {
+                state.value = state.value.copy(urlLogin = event.value)
+            }
             is LoginEvent.OnUpdatePasswordLogin -> {
-
+                state.value = state.value.copy(passwordLogin = event.value)
             }
 
             is LoginEvent.OnUpdateUsernameLogin -> {
-
+                state.value = state.value.copy(usernameLogin = event.value)
             }
 
             is LoginEvent.OnRemoveHeadFromQueue -> {
@@ -48,6 +50,8 @@ class LoginViewModel : ViewModel(){
             is LoginEvent.OnUpdateNetworkState -> {
 
             }
+
+
         }
     }
 }

@@ -7,6 +7,7 @@ sealed class LoginEvent{
 
 
     data class OnUpdateNameRegister(val value: String) : LoginEvent()
+    data class OnUpdateUrlLogin(val value: String) : LoginEvent()
     data class OnUpdateUsernameLogin(val value: String) : LoginEvent()
     data class OnUpdatePasswordLogin(val value: String) : LoginEvent()
 

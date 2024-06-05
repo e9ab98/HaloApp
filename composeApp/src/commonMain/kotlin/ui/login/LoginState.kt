@@ -6,7 +6,8 @@ import core.ProgressBarState
 import core.Queue
 
 data class LoginState(
-    val nameRegister: String = "",
+//    val nameRegister: String = "",
+    val urlLogin:String = "",
     val usernameLogin: String = "",
     val passwordLogin: String = "",
 

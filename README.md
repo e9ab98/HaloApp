@@ -3,6 +3,8 @@ HaloApp应用程序的文档！
 这是一个跨平台应用程序，使用Jetpack Compose Multiplatform构建，这是一个声明性框架，用于与Kotlin跨多个平台共享UI。
 该应用程序允许用户从Android、iOS上管理Halo后台管理系统。
 
+基于Halo 2.0 API开发
+
 ## Give a Star! ⭐
 如果您喜欢或正在使用这个项目来学习或开始您的解决方案，请给它一颗星。谢谢！
 

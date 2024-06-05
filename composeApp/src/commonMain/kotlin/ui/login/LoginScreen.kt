@@ -5,6 +5,7 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import core.UIComponent
 import common.formatURL
@@ -43,51 +43,45 @@ import haloapp.composeapp.generated.resources.eye_slash
 import haloapp.composeapp.generated.resources.logo
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import ui.core.components.Alert
 import ui.core.components.ProgressAlert
 import ui.login.LoginViewModel
 import ui.core.theme.LARGE
 import ui.core.theme.MIDDLE
 import ui.core.theme.SMALL
+import ui.login.LoginState
+import ui.splash.view_model.LoginEvent
 
 /**
  * 登录页面
  */
 @Composable
 fun LoginScreen(
-    navController: NavController,
-    loginViewModel: LoginViewModel = viewModel()
+    state: LoginState,
+    events: (LoginEvent) -> Unit,
+    navigateToMain: () -> Unit,
+    navigateToRegister: () -> Unit
 ) {
-    var url by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         Title()
-        Inputs(
-            urlValue = url,
-            onUrlChange = { url = it },
-            usernameValue = username,
-            onUsernameChange = { username = it },
-            passwordValue = password,
-            onPasswordChange = { password = it }
+        Inputs(state,
+            onUrlChange = {  events(LoginEvent.OnUpdateUrlLogin(it))},
+            onUsernameChange = { events(LoginEvent.OnUpdateUsernameLogin(it)) },
+            onPasswordChange = { events(LoginEvent.OnUpdatePasswordLogin(it)) }
         )
         LoginBtn(
-            url = url,
-            username = username,
-            password = password,
-            loginViewModel = loginViewModel,
-            navController = navController
+            state,
+            events,
+            navigateToMain
         )
         BottomTips()
     }
 }
 
 /**
- * Kalo 大字标题
+ *  大字标题
  */
 @Composable
 private fun Title() {
@@ -112,11 +106,11 @@ private fun Title() {
                 .padding(top = LARGE * 2, bottom = LARGE * 2),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.logo),
-                contentDescription = "Kalo",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(150.dp)
+            Image(
+                painter = painterResource(Res.drawable.logo), // Replace with your WebP image resource
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(150.dp)
             )
         }
     }
@@ -134,11 +128,9 @@ private fun Title() {
  */
 @Composable
 private fun Inputs(
-    urlValue: String,
+    state: LoginState,
     onUrlChange: (String) -> Unit,
-    usernameValue: String,
     onUsernameChange: (String) -> Unit,
-    passwordValue: String,
     onPasswordChange: (String) -> Unit,
 ) {
     Column(
@@ -149,21 +141,21 @@ private fun Inputs(
         Input(
             label = "Halo 站点地址",
             placeholder = "URL 或 IP 地址",
-            value = urlValue,
+            value = state.urlLogin,
             onValueChange = onUrlChange
         )
 
         Input(
             label = "用户名",
             placeholder = "Halo 用户名",
-            value = usernameValue,
+            value = state.usernameLogin,
             onValueChange = onUsernameChange
         )
 
         Input(
             label = "密码",
             placeholder = "Halo 登录密码",
-            value = passwordValue,
+            value = state.passwordLogin,
             onValueChange = onPasswordChange,
             isPassword = true
         )
@@ -207,10 +199,10 @@ private fun Input(
                 IconButton(onClick = { showPassword = !showPassword }) {
                     Icon(
                         painter = if (showPassword) painterResource(Res.drawable.eye)
-                            else painterResource(Res.drawable.eye_slash),
+                        else painterResource(Res.drawable.eye_slash),
                         contentDescription = "显示密码",
                         tint = if (showPassword) MaterialTheme.colorScheme.primary
-                            else LocalContentColor.current,
+                        else LocalContentColor.current,
                         modifier = Modifier.size(MIDDLE)
 
                     )
@@ -231,11 +223,9 @@ private fun Input(
  */
 @Composable
 private fun LoginBtn(
-    url: String,
-    username: String,
-    password: String,
-    loginViewModel: LoginViewModel,
-    navController: NavController
+    state: LoginState,
+    events: (LoginEvent) -> Unit,
+    navigateToMain: () -> Unit,
 ) {
     // 协程作用域
     val scope = rememberCoroutineScope()
@@ -255,10 +245,6 @@ private fun LoginBtn(
     // 是否显示正在登录对话框
     var showLoadingAlert by remember { mutableStateOf(false) }
 
-    // 登录状态
-    val loginStatus by loginViewModel.state
-
-
 
     AnimatedVisibility(
         visibleState = animateState,
@@ -273,31 +259,45 @@ private fun LoginBtn(
         ) {
             Button(
                 onClick = {
-                    // 有空白信息
-                    if (url.isEmpty() || username.isEmpty() || password.isEmpty()) {
-                        alertTitle = "登录失败"
-                        alertText = "请将信息输入完整"
-                        showAlert = true
-                        return@Button
+                    alertTitle = "温馨提示"
+                    when {
+                        state.urlLogin.isEmpty() -> {
+                            alertText = "URL 不能为空"
+                            showAlert = true
+                            return@Button
+                        }
+                        state.usernameLogin.isEmpty() -> {
+                            alertText = "用户名不能为空"
+                            showAlert = true
+                            return@Button
+                        }
+                        state.passwordLogin.isEmpty() -> {
+                            alertText = "密码不能为空"
+                            showAlert = true
+                            return@Button
+                        }
+                        else -> {
+                            // 判断并格式化网址
+                            val formatUrl = state.urlLogin.formatURL()
+                            if (formatUrl.isEmpty()) {
+                                alertText = "站点地址有误，请重新输入，\n" +
+                                        "URL 需要加上 https:// 或 http://"
+                                showAlert = true
+                                return@Button
+                            }
+                            showLoadingAlert = true
+                            // 启动协程处理登录操作
+                            scope.launch {
+                                UIComponent.Toast(JAlertResponse("正在登录", "开发中"))
+                                if (state.navigateToMain) {
+                                    navigateToMain()
+                                }
+                            }
+                        }
                     }
 
-                    // 判断并格式化网址
-                    val formatUrl = url.formatURL()
-                    if (formatUrl.isEmpty()) {
-                        alertTitle = "登录失败"
-                        alertText = "站点地址有误，请重新输入，\n" +
-                                "URL 需要加上 https:// 或 http://"
-                        showAlert = true
-                        return@Button
-                    }
 
-                    showLoadingAlert = true
-                    // 启动协程处理登录操作
-                    scope.launch {
-                        UIComponent.Toast(JAlertResponse("正在登录","开发中"))
-                        // 尝试登录
-//                        loginViewModel.login(formatUrl, username, password)
-                    }
+
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = CardDefaults.shape
@@ -310,11 +310,12 @@ private fun LoginBtn(
     // 显示对话框话框
     if (showAlert) {
         // 显示对话框前先确认
-        showAlert = false
-        "正在登录...".ProgressAlert(5000) {
+        showLoadingAlert = false
+        alertText.Alert(alertTitle) {
             showAlert = false
         }
     }
+
 
 //
 //    // 登录状态改变
