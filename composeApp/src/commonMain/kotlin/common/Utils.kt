@@ -18,6 +18,14 @@ fun getRandomChat(length: Int): String {
     return result.toString()
 }
 
+fun randomUUID(): String {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(Regex("[xy]")) { matchResult ->
+        val c = matchResult.value[0]
+        val r = Random.nextInt(16)
+        val v = if (c == 'x') r else (r and 0x3) or 0x8
+        v.toString(16)
+    }
+}
 
 
 

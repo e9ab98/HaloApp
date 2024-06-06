@@ -1,4 +1,4 @@
-package ui.splash.view_model
+package ui.login.view_model
 
 import core.UIComponent
 import core.NetworkState

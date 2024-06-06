@@ -1,10 +1,9 @@
-package ui.login
+package ui.login.view_model
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import ui.splash.view_model.LoginEvent
+import ui.login.LoginState
 
 class LoginViewModel : ViewModel(){
     val state: MutableState<LoginState> = mutableStateOf(LoginState())

@@ -33,7 +33,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import core.UIComponent
 import common.formatURL
 import core.JAlertResponse
@@ -45,12 +44,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import ui.core.components.Alert
 import ui.core.components.ProgressAlert
-import ui.login.LoginViewModel
 import ui.core.theme.LARGE
 import ui.core.theme.MIDDLE
 import ui.core.theme.SMALL
 import ui.login.LoginState
-import ui.splash.view_model.LoginEvent
+import ui.login.view_model.LoginEvent
 
 /**
  * 登录页面
