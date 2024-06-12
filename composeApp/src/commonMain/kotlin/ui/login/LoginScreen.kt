@@ -341,11 +341,11 @@ private fun LoginBtn(
 //    }
 
     // 显示正在登录对话框
-    if (showLoadingAlert) {
-        "正在登录...".ProgressAlert(5000) {
-            showLoadingAlert = false
-        }
-    }
+//    if (showLoadingAlert) {
+//        "正在登录...".ProgressAlert(5000) {
+//            showLoadingAlert = false
+//        }
+//    }
 }
 
 /**

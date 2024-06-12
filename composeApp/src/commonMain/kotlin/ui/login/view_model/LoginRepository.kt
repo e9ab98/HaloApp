@@ -20,7 +20,7 @@ class LoginRepository(
         return flow {
             emit(ViewState.loading())
             val apiResponse = service.getPublicKey(map)
-            emit(apiResponse)
+            emit(ViewState.success(apiResponse))
         }.catch {
             emit(ViewState.error(it))
         }
@@ -29,3 +29,4 @@ class LoginRepository(
 
 
 }
+

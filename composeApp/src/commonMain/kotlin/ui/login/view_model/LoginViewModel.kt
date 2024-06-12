@@ -4,13 +4,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import common.getRandomChat
 import common.randomUUID
 import core.AppDataStore
 import core.ConfigKey
-import core.JAlertResponse
-import core.UIComponent
 import core.ViewState
-import io.ktor.client.plugins.logging.Logger
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,12 +31,11 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
 
     fun getPublicKey() {
         val map = mutableMapOf<String,String>()
+        map["p_uv_id"] = getRandomChat(16)
         map["XSRF-TOKEN"] = randomUUID()
-        map["baseUrl"] = state.value.urlLogin
         loginRepository.getPublicKey(map).onEach {
             when(it){
                 is ViewState.Loading ->{
-                    UIComponent.Toast(JAlertResponse("正在登录", "开发中"))
                     println("ViewState.Loading")
                 }
                 is ViewState.Success ->{
@@ -50,11 +47,11 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                 is ViewState.OnResult -> {
                     println("ViewState.OnResult:")
                 }
-                is ViewState.SuccessDefault -> {
-                    println("ViewState.SuccessDefault:"+it.data)
-                }
                 is ViewState.onEmpty -> {
                     println("ViewState.onEmpty:"+it.message)
+                }
+                is ViewState.SuccessRestful -> {
+                    println("ViewState.SuccessRestful:"+it.data)
                 }
             }
         }.launchIn(viewModelScope)
@@ -65,9 +62,8 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
             appDataStoreManager.setToRoom(ConfigKey.HALO_URL,state.value.urlLogin)
             appDataStoreManager.setToRoom(ConfigKey.USERNAME,state.value.usernameLogin)
             appDataStoreManager.setToRoom(ConfigKey.PASSWORD,state.value.passwordLogin)
-
-            getPublicKey()
         }
+        getPublicKey()
     }
     fun onTriggerEvent(event: LoginEvent) {
         when (event) {

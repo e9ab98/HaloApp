@@ -28,7 +28,7 @@ koin = "3.4.3"
 koin-compose = "1.0.4"
 coil3-io = "3.0.0-alpha01"
 
-ktor = "2.3.5"
+ktor = "2.3.11"
 
 
 
@@ -84,3 +84,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+pluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

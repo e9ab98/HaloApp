@@ -1,5 +1,6 @@
 package di
 
+import core.BaseResult
 import core.ViewState
 
 
@@ -13,6 +14,6 @@ interface ApiService {
      * 获取 Public-Key
      */
 
-    suspend fun getPublicKey(map: Map<String,Any>): ViewState<PublicKey>
+    suspend fun getPublicKey(map: Map<String,Any>): PublicKey
     suspend fun login(csrf: String,username: String,password: String): Any
 }

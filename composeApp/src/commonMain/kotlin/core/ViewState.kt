@@ -1,19 +1,15 @@
 package core
 
 import coil3.network.HttpException
-import io.ktor.client.call.body
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
-import io.ktor.client.statement.request
 import io.ktor.http.parsing.ParseException
 import io.ktor.serialization.JsonConvertException
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import okio.IOException
 
-
-@kotlinx.serialization.Serializable
-data class BaseResultDefault<T>(var `data`: T,var code: Int,var msg: String)
-@kotlinx.serialization.Serializable
+@Serializable
 data class BaseResult<T>(var `data`: T,var code: Int,var message: String,var page: String,var success: Boolean)
 
 
@@ -23,8 +19,9 @@ sealed class ViewState<ResultType> {
      * Describes success state of the UI with
      * [data] shown
      */
-    data class Success<ResultType>(val data: BaseResult<ResultType>) : ViewState<ResultType>()
-    data class SuccessDefault<ResultType>(val data: BaseResultDefault<ResultType>) : ViewState<ResultType>()
+    data class SuccessRestful<ResultType>(val data: BaseResult<ResultType>) : ViewState<ResultType>()
+    data class Success<ResultType>(val data: ResultType) : ViewState<ResultType>()
+
 
     data class onEmpty<ResultType>(val message: String = "") : ViewState<ResultType>()
 
@@ -45,16 +42,17 @@ sealed class ViewState<ResultType> {
     /**
      *  Describes error state of the UI
      */
+    @Serializable
     data class Error<ResultType>(val message: String = "") : ViewState<ResultType>()
 
     companion object {
         /**
-         * Creates [ViewState] object with [Success] state and [data].
+         * Creates [ViewState] object with [SuccessRestful] state and [data].
          */
-        fun <ResultType> success(data: BaseResult<ResultType>): ViewState<ResultType> {
+        fun <ResultType> SuccessRestful(data: BaseResult<ResultType>): ViewState<ResultType> {
             if (data !=null){
                 if (data.success){
-                    return Success(data)
+                    return SuccessRestful(data)
                 }
                 return Error(data.message)
             }else{
@@ -62,13 +60,13 @@ sealed class ViewState<ResultType> {
             }
         }
         /**
-         * Creates [ViewState] object with [Success] state and [data].
+         * Creates [ViewState] object with [SuccessRestful] state and [data].
          */
-        fun <ResultType> successDefault(data: BaseResultDefault<ResultType>): ViewState<ResultType> {
-            return if (data != null && data.data != null) {
-                SuccessDefault(data)
+        fun <ResultType> success(data: ResultType): ViewState<ResultType> {
+            return if (data != null) {
+                Success(data)
             } else {
-                Error(data.msg)
+                onEmpty("暂无数据！")
             }
         }
 
@@ -120,6 +118,8 @@ sealed class ViewState<ResultType> {
                 else -> return data.data
             }
         }
+
+
     }
 
 

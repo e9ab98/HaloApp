@@ -1,6 +1,8 @@
 package core
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.http
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -74,6 +76,17 @@ object KtorHttpClient {
                 classDiscriminator = "#class"
             })
         }
+//        engine {
+//            // 设置代理服务器
+//            proxy = ProxyBuilder.http("http://127.0.0.1:8888")
+//
+//        }
+        engine {
+//            https {
+//                this.hostnameVerifier = HostnameVerifier.ANY
+//            }
+        }
+
 
     }
 
