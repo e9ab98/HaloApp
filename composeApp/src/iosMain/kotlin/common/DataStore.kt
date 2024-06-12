@@ -13,3 +13,14 @@ actual suspend fun Context.putData(key: String, `object`: String) {
 actual suspend inline fun Context.getData(key: String): String? {
     return NSUserDefaults.standardUserDefaults().stringForKey(key)
 }
+actual suspend fun Context.getAllData(): Map<String, String?> {
+    val userDefaults = NSUserDefaults.standardUserDefaults()
+    val dictionary = userDefaults.dictionaryRepresentation()
+    val allData = mutableMapOf<String, String?>()
+
+    dictionary.keys.forEach { key ->
+        allData[key as String] = dictionary[key] as? String
+    }
+
+    return allData
+}

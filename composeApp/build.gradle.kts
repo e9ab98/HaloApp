@@ -37,6 +37,14 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            api(libs.androidx.appcompat)
+            implementation(libs.ktor.okhttp)
+            api(libs.coil3.gif)
+            api(libs.coil3.svg)
+            api(libs.coil3.core)
+            api(libs.coil3.video)
+            implementation(libs.system.ui.controller)
+            implementation(libs.accompanist.permissions)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -61,8 +69,19 @@ kotlin {
             api(libs.coil3)
             api(libs.coil3.network)
 
+            implementation(libs.ktor.core)
+            implementation(libs.ktor.logging)
+            implementation(libs.ktor.serialization)
+            implementation(libs.ktor.negotiation)
+
             implementation(libs.system.ui.controller)
             implementation(libs.accompanist.permissions)
+        }
+        iosMain {
+            dependencies {
+                implementation(libs.ktor.darwin.ios)
+                implementation(libs.ktor.ios)
+            }
         }
     }
 }

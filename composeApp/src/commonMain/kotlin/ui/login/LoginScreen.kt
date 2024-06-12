@@ -41,6 +41,7 @@ import haloapp.composeapp.generated.resources.eye
 import haloapp.composeapp.generated.resources.eye_slash
 import haloapp.composeapp.generated.resources.logo
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.core.components.Alert
 import ui.core.components.ProgressAlert
@@ -53,6 +54,7 @@ import ui.login.view_model.LoginEvent
 /**
  * 登录页面
  */
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LoginScreen(
     state: LoginState,
@@ -219,6 +221,7 @@ private fun Input(
  * @param password Halo 密码
  * @param loginViewModel ViewModel
  */
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LoginBtn(
     state: LoginState,
@@ -286,11 +289,12 @@ private fun LoginBtn(
                             showLoadingAlert = true
                             // 启动协程处理登录操作
                             scope.launch {
-                                UIComponent.Toast(JAlertResponse("正在登录", "开发中"))
+                                events(LoginEvent.Login)
                                 if (state.navigateToMain) {
                                     navigateToMain()
                                 }
                             }
+
                         }
                     }
 
