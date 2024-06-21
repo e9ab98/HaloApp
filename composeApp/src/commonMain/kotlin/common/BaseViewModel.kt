@@ -10,7 +10,7 @@ import core.Queue
 import core.UIComponent
 
 
-open class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
     val stateBase: MutableState<CommonUiState> = mutableStateOf(CommonUiState())
 
     fun setProgressBarState(progressState: ProgressBarState){

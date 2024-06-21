@@ -19,15 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import core.CommonUiState
 import core.NetworkState
 import core.ProgressBarState
-import core.Queue
 import core.UIComponent
 import haloapp.composeapp.generated.resources.Res
 import haloapp.composeapp.generated.resources.logo
@@ -35,6 +32,7 @@ import haloapp.composeapp.generated.resources.no_wifi
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.core.theme.Spacer_16dp
+import ui.login.view_model.LoginEvent
 
 /**
  * @param queue: Dialogs
@@ -42,9 +40,8 @@ import ui.core.theme.Spacer_16dp
  */
 @Composable
 fun DefaultScreenUI(
-    queue: Queue<UIComponent> = Queue(mutableListOf()),
-    onRemoveHeadFromQueue: () -> Unit = {},
-    progressBarState: ProgressBarState = ProgressBarState.Idle,
+    stateBase: CommonUiState,
+    events: (LoginEvent) -> Unit,
     networkState: NetworkState = NetworkState.Good,
     onTryAgain: () -> Unit = {},
     titleToolbar: String? = null,
@@ -54,7 +51,6 @@ fun DefaultScreenUI(
     onClickEndIconToolbar: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-
     Scaffold(
         topBar = {
             if (titleToolbar != null) {
@@ -91,32 +87,34 @@ fun DefaultScreenUI(
         ) {
             content()
             // process the queue
-            if (!queue.isEmpty()) {
-                queue.peek()?.let { uiComponent ->
+            if (!stateBase.errorQueue.isEmpty()) {
+                stateBase.errorQueue.peek()?.let { uiComponent ->
                     if (uiComponent is UIComponent.Dialog) {
                         CreateUIComponentDialog(
                             title = uiComponent.title,
                             description = uiComponent.message,
-                            onRemoveHeadFromQueue = onRemoveHeadFromQueue
+                            onRemoveHeadFromQueue = { events(LoginEvent.OnRemoveHeadFromQueue) }
                         )
                     }
                     if (uiComponent is UIComponent.ToastSimple) {
                         ShowSnackbar(
                             title = uiComponent.title,
                             snackbarVisibleState = true,
-                            onDismiss = onRemoveHeadFromQueue,
+                            onDismiss = { events(LoginEvent.OnRemoveHeadFromQueue) },
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }
             }
 
-            when(progressBarState){
+            when(stateBase.progressBarState){
                 ProgressBarState.LoadingWithLogo ->{
                     LoadingWithLogoScreen()
                 }
                 ProgressBarState.ProgressAlertLoading -> {
-                    "正在登录...".ProgressAlert(5000) {}
+                    "正在登录...".ProgressAlert(5000L){
+                        events(LoginEvent.OnLoading(ProgressBarState.Idle))
+                    }
                 }
                 ProgressBarState.ScreenLoading,ProgressBarState.FullScreenLoading -> {
                     CircularProgressIndicator()

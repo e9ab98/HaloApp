@@ -46,7 +46,6 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.core.components.Alert
 import ui.core.components.DefaultScreenUI
-import ui.core.components.ProgressAlert
 import ui.core.theme.LARGE
 import ui.core.theme.MIDDLE
 import ui.core.theme.SMALL
@@ -260,10 +259,8 @@ private fun LoginBtn(
             )
         )
     ) {
-        DefaultScreenUI(
-            queue = stateBase.errorQueue,
-            onRemoveHeadFromQueue = { events(LoginEvent.OnRemoveHeadFromQueue) },
-            progressBarState = stateBase.progressBarState
+        DefaultScreenUI(stateBase,
+            events,
         )   {
             Column(
                 modifier = Modifier.padding(start = LARGE, end = LARGE)

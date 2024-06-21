@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ fun String.ProgressAlert(
     showBtnTime: Long = 0,
     onConfirm: () -> Unit
 ) {
+    var showDialog by remember { mutableStateOf(true) }
     // 是否显示取消按钮
     var showBtn by remember { mutableStateOf(false) }
 
@@ -43,7 +45,7 @@ fun String.ProgressAlert(
     }
 
     AlertDialog(
-        onDismissRequest = {},
+        onDismissRequest = onConfirm,
         title = {
             Text(this)
         },
@@ -62,7 +64,9 @@ fun String.ProgressAlert(
         },
         confirmButton = {
             if (showBtn) {
-                TextButton(onClick = onConfirm) {
+                TextButton(onClick = {
+                    onConfirm()
+                }) {
                     Text("取消")
                 }
             }

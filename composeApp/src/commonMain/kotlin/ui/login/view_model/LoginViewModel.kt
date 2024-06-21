@@ -41,6 +41,8 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                     println("ViewState.Loading:"+it.isShow)
                     if (it.isShow){
                         setProgressBarState(ProgressBarState.ProgressAlertLoading)
+                    }else{
+//                        setProgressBarState(ProgressBarState.Idle)
                     }
                 }
                 is ViewState.Success ->{
@@ -107,6 +109,9 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                 onUpdateNetworkState(event.networkState)
             }
 
+            is LoginEvent.OnLoading -> {
+                setProgressBarState(event.progressBarState)
+            }
         }
     }
 }
