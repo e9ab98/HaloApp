@@ -76,16 +76,17 @@ object KtorHttpClient {
                 classDiscriminator = "#class"
             })
         }
-//        engine {
-//            // 设置代理服务器
-//            proxy = ProxyBuilder.http("http://127.0.0.1:8888")
-//
-//        }
         engine {
-//            https {
-//                this.hostnameVerifier = HostnameVerifier.ANY
-//            }
+
+            // 设置代理服务器
+            proxy = ProxyBuilder.http("http://192.168.5.187:8888")
+
         }
+//        engine {
+////            https {
+////                this.hostnameVerifier = HostnameVerifier.ANY
+////            }
+//        }
 
 
     }

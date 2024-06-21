@@ -2,21 +2,21 @@ package ui.login.view_model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import common.BaseViewModel
 import common.getRandomChat
 import common.randomUUID
 import core.AppDataStore
 import core.ConfigKey
+import core.ProgressBarState
 import core.ViewState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ui.login.LoginState
 
-class LoginViewModel(private val loginRepository: LoginRepository,private val appDataStoreManager: AppDataStore) : ViewModel(){
+class LoginViewModel(private val loginRepository: LoginRepository,private val appDataStoreManager: AppDataStore) : BaseViewModel(){
     val state: MutableState<LoginState> = mutableStateOf(LoginState())
-
     init {
         viewModelScope.launch {
             state.value =
@@ -29,14 +29,19 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
         }
     }
 
-    fun getPublicKey() {
+    fun getPublicKey(event: LoginEvent.Login) {
         val map = mutableMapOf<String,String>()
         map["p_uv_id"] = getRandomChat(16)
         map["XSRF-TOKEN"] = randomUUID()
         loginRepository.getPublicKey(map).onEach {
             when(it){
                 is ViewState.Loading ->{
-                    println("ViewState.Loading")
+//                    println("ViewState.Loading")
+//                    onTriggerEvent(LoginEvent.Error(uiComponent = UIComponent.Dialog()))
+                    println("ViewState.Loading:"+it.isShow)
+                    if (it.isShow){
+                        setProgressBarState(ProgressBarState.ProgressAlertLoading)
+                    }
                 }
                 is ViewState.Success ->{
                     println("ViewState.Success:"+it.data)
@@ -44,32 +49,27 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                 is ViewState.Error -> {
                     println("ViewState.Error:"+it.message)
                 }
-                is ViewState.OnResult -> {
-                    println("ViewState.OnResult:")
-                }
                 is ViewState.onEmpty -> {
                     println("ViewState.onEmpty:"+it.message)
                 }
                 is ViewState.SuccessRestful -> {
                     println("ViewState.SuccessRestful:"+it.data)
                 }
+
             }
         }.launchIn(viewModelScope)
 
     }
-    fun setData(): Unit {
-        viewModelScope.launch {
-            appDataStoreManager.setToRoom(ConfigKey.HALO_URL,state.value.urlLogin)
-            appDataStoreManager.setToRoom(ConfigKey.USERNAME,state.value.usernameLogin)
-            appDataStoreManager.setToRoom(ConfigKey.PASSWORD,state.value.passwordLogin)
-        }
-        getPublicKey()
-    }
+
     fun onTriggerEvent(event: LoginEvent) {
         when (event) {
-
             is LoginEvent.Login -> {
-                setData()
+                viewModelScope.launch {
+                    appDataStoreManager.setToRoom(ConfigKey.HALO_URL,state.value.urlLogin)
+                    appDataStoreManager.setToRoom(ConfigKey.USERNAME,state.value.usernameLogin)
+                    appDataStoreManager.setToRoom(ConfigKey.PASSWORD,state.value.passwordLogin)
+                }
+                getPublicKey(event)
 
             }
 
@@ -92,11 +92,11 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
             }
 
             is LoginEvent.OnRemoveHeadFromQueue -> {
-
+                removeHeadMessage()
             }
 
             is LoginEvent.Error -> {
-
+                appendToMessageQueue(event.uiComponent)
             }
 
             is LoginEvent.OnRetryNetwork -> {
@@ -104,7 +104,7 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
             }
 
             is LoginEvent.OnUpdateNetworkState -> {
-
+                onUpdateNetworkState(event.networkState)
             }
 
         }

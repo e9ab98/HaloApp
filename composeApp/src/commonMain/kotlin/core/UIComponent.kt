@@ -1,14 +1,11 @@
 package core
 
-
 sealed class UIComponent {
 
-    data class Toast(
-        val alert: JAlertResponse
-    ): UIComponent()
+    data class Toast(var title: String,var message: String): UIComponent()
 
     data class Dialog(
-        val alert:JAlertResponse
+        var title: String,var message: String
     ): UIComponent()
 
 

@@ -2,7 +2,7 @@ package core
 
 sealed class ProgressBarState{
 
-   data object ButtonLoading: ProgressBarState()
+   data object ProgressAlertLoading: ProgressBarState()
 
    data object ScreenLoading: ProgressBarState()
 

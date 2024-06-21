@@ -25,19 +25,10 @@ sealed class ViewState<ResultType> {
 
     data class onEmpty<ResultType>(val message: String = "") : ViewState<ResultType>()
 
-    class OnResult<ResultType>: ViewState<ResultType>()
-
     /**
      * Describes loading state of the UI
      */
-    class Loading<ResultType> : ViewState<ResultType>() {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            return true
-        }
-
-
-    }
+    class Loading<ResultType>(val isShow: Boolean) : ViewState<ResultType>()
 
     /**
      *  Describes error state of the UI
@@ -74,8 +65,7 @@ sealed class ViewState<ResultType> {
          * Creates [ViewState] object with [Loading] state to notify
          * the UI to showing loading.
          */
-        fun <ResultType> loading(): ViewState<ResultType> = Loading()
-        fun <ResultType> onResult(): ViewState<ResultType> = OnResult()
+        fun <ResultType> loading(isShow: Boolean): ViewState<ResultType> = Loading(isShow)
         /**
          * Creates [ViewState] object with [Error] state and [message].
          */

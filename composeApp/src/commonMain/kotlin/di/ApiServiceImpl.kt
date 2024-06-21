@@ -22,17 +22,13 @@ import io.ktor.http.takeFrom
 class ApiServiceImpl ( private val httpClient: HttpClient):ApiService{
 
     override suspend fun getPublicKey(map: Map<String, Any>): PublicKey {
+
         val cookieString = map.entries.joinToString("; ") { "${it.key}=${it.value}" }
-        return httpClient.get {
-            url {
-                headers {
-                    append(HttpHeaders.Cookie, "browsertc=1; $cookieString")
-                }
-                takeFrom(AppDataUtils.getBaseUrl())
-                encodedPath += ApiService.Public_Key
+        return httpClient.get(AppDataUtils.getBaseUrl()+ApiService.Public_Key) {
+            headers {
+                append(HttpHeaders.Cookie, "browsertc=1; $cookieString")
             }
             contentType(ContentType.Application.Json)
-
         }.body()
     }
 

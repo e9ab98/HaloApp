@@ -40,6 +40,7 @@ internal fun SplashNav(viewModel: LoginViewModel = koinInject(), navigateToMain:
                     navigator.navigate(SplashNavigation.Register.route)
                 },
                 state = viewModel.state.value,
+                stateBase = viewModel.stateBase.value,
                 events = viewModel::onTriggerEvent
             )
         }

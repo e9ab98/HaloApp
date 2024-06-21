@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import core.UIComponent
 import common.formatURL
+import core.CommonUiState
 import core.JAlertResponse
 import haloapp.composeapp.generated.resources.Res
 import haloapp.composeapp.generated.resources.eye
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.core.components.Alert
+import ui.core.components.DefaultScreenUI
 import ui.core.components.ProgressAlert
 import ui.core.theme.LARGE
 import ui.core.theme.MIDDLE
@@ -58,6 +60,7 @@ import ui.login.view_model.LoginEvent
 @Composable
 fun LoginScreen(
     state: LoginState,
+    stateBase: CommonUiState,
     events: (LoginEvent) -> Unit,
     navigateToMain: () -> Unit,
     navigateToRegister: () -> Unit
@@ -73,6 +76,7 @@ fun LoginScreen(
         )
         LoginBtn(
             state,
+            stateBase,
             events,
             navigateToMain
         )
@@ -225,6 +229,7 @@ private fun Input(
 @Composable
 private fun LoginBtn(
     state: LoginState,
+    stateBase: CommonUiState,
     events: (LoginEvent) -> Unit,
     navigateToMain: () -> Unit,
 ) {
@@ -255,60 +260,67 @@ private fun LoginBtn(
             )
         )
     ) {
-        Column(
-            modifier = Modifier.padding(start = LARGE, end = LARGE)
-        ) {
-            Button(
-                onClick = {
-                    alertTitle = "温馨提示"
-                    when {
-                        state.urlLogin.isEmpty() -> {
-                            alertText = "URL 不能为空"
-                            showAlert = true
-                            return@Button
-                        }
-                        state.usernameLogin.isEmpty() -> {
-                            alertText = "用户名不能为空"
-                            showAlert = true
-                            return@Button
-                        }
-                        state.passwordLogin.isEmpty() -> {
-                            alertText = "密码不能为空"
-                            showAlert = true
-                            return@Button
-                        }
-                        else -> {
-                            // 判断并格式化网址
-                            val formatUrl = state.urlLogin.formatURL()
-                            if (formatUrl.isEmpty()) {
-                                alertText = "站点地址有误，请重新输入，\n" +
-                                        "URL 需要加上 https:// 或 http://"
+        DefaultScreenUI(
+            queue = stateBase.errorQueue,
+            onRemoveHeadFromQueue = { events(LoginEvent.OnRemoveHeadFromQueue) },
+            progressBarState = stateBase.progressBarState
+        )   {
+            Column(
+                modifier = Modifier.padding(start = LARGE, end = LARGE)
+            ) {
+                Button(
+                    onClick = {
+                        alertTitle = "温馨提示"
+                        when {
+                            state.urlLogin.isEmpty() -> {
+                                alertText = "URL 不能为空"
                                 showAlert = true
                                 return@Button
                             }
-                            showLoadingAlert = true
-                            // 启动协程处理登录操作
-                            scope.launch {
-                                events(LoginEvent.Login)
-                                if (state.navigateToMain) {
-                                    navigateToMain()
-                                }
+
+                            state.usernameLogin.isEmpty() -> {
+                                alertText = "用户名不能为空"
+                                showAlert = true
+                                return@Button
                             }
 
+                            state.passwordLogin.isEmpty() -> {
+                                alertText = "密码不能为空"
+                                showAlert = true
+                                return@Button
+                            }
+
+                            else -> {
+                                // 判断并格式化网址
+                                val formatUrl = state.urlLogin.formatURL()
+                                if (formatUrl.isEmpty()) {
+                                    alertText = "站点地址有误，请重新输入，\n" +
+                                            "URL 需要加上 https:// 或 http://"
+                                    showAlert = true
+                                    return@Button
+                                }
+                                showLoadingAlert = true
+                                // 启动协程处理登录操作
+                                scope.launch {
+                                    events(LoginEvent.Login)
+                                    if (state.navigateToMain) {
+                                        navigateToMain()
+                                    }
+                                }
+
+                            }
                         }
-                    }
 
 
-
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = CardDefaults.shape
-            ) {
-                Text("登录")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = CardDefaults.shape
+                ) {
+                    Text("登录")
+                }
             }
         }
     }
-
     // 显示对话框话框
     if (showAlert) {
         // 显示对话框前先确认

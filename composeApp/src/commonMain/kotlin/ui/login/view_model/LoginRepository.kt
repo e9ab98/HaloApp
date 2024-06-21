@@ -1,11 +1,7 @@
 package ui.login.view_model
 
 
-import core.AppDataStore
-import core.DataState
-import core.ProgressBarState
 import core.ViewState
-import core.handleUseCaseException
 import di.ApiService
 import di.PublicKey
 import kotlinx.coroutines.flow.Flow
@@ -18,10 +14,12 @@ class LoginRepository(
 
     fun getPublicKey(map: Map<String,Any>): Flow<ViewState<PublicKey>>{
         return flow {
-            emit(ViewState.loading())
+            emit(ViewState.loading(true))
             val apiResponse = service.getPublicKey(map)
             emit(ViewState.success(apiResponse))
+            emit(ViewState.loading(false))
         }.catch {
+            emit(ViewState.loading(false))
             emit(ViewState.error(it))
         }
 
