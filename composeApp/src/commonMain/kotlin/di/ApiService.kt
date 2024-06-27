@@ -1,13 +1,10 @@
 package di
 
-import core.BaseResult
-import core.ViewState
-
 
 interface ApiService {
     companion object {
-        const val LOGIN = "login"
-        const val Public_Key = "/login/public-key"
+        const val LOGIN = "/login"
+        const val Public_Key = LOGIN+"/public-key"
 
     }
     /**
@@ -15,5 +12,6 @@ interface ApiService {
      */
 
     suspend fun getPublicKey(map: Map<String,Any>): PublicKey
-    suspend fun login(csrf: String,username: String,password: String): Any
+
+    suspend fun getLogin(map: Map<String,String>, username: String, password: String,remember_me :Boolean): LoginBean
 }

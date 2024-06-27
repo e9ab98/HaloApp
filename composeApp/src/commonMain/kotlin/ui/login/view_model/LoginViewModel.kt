@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import common.BaseViewModel
+import common.RSAUtils
 import common.getRandomChat
 import common.randomUUID
 import core.AppDataStore
@@ -28,7 +29,35 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
 
         }
     }
+    fun getLogin(map: Map<String,String>,base64: String){
+        val username = state.value.usernameLogin
+        val password = state.value.passwordLogin
+        val token = map["XSRF-TOKEN"]
+        viewModelScope.launch {
+            val encryptPass = RSAUtils.encryptData(password,base64)
+            if (token != null) {
+                loginRepository.getLogin(map,username,encryptPass,false).onEach {
+                    when(it){
+                        is ViewState.Error ->  println("ViewState.Error:"+it.message)
+                        is ViewState.Loading -> {
+                            if (it.isShow){
+                                setProgressBarState(ProgressBarState.ProgressAlertLoading)
+                            }else{
+                                setProgressBarState(ProgressBarState.Idle)
+                            }
+                        }
+                        is ViewState.Success -> {
 
+                        }
+                        else -> {
+                            println("ViewState.Error:"+it.toString())
+                        }
+                    }
+                }.launchIn(viewModelScope)
+            }
+        }
+
+    }
     fun getPublicKey(event: LoginEvent.Login) {
         val map = mutableMapOf<String,String>()
         map["p_uv_id"] = getRandomChat(16)
@@ -42,11 +71,12 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                     if (it.isShow){
                         setProgressBarState(ProgressBarState.ProgressAlertLoading)
                     }else{
-//                        setProgressBarState(ProgressBarState.Idle)
+                        setProgressBarState(ProgressBarState.Idle)
                     }
                 }
                 is ViewState.Success ->{
                     println("ViewState.Success:"+it.data)
+                    getLogin(map,it.data.base64Format)
                 }
                 is ViewState.Error -> {
                     println("ViewState.Error:"+it.message)
@@ -54,10 +84,7 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                 is ViewState.onEmpty -> {
                     println("ViewState.onEmpty:"+it.message)
                 }
-                is ViewState.SuccessRestful -> {
-                    println("ViewState.SuccessRestful:"+it.data)
-                }
-
+                else -> {}
             }
         }.launchIn(viewModelScope)
 

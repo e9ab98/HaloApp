@@ -8,6 +8,7 @@ import core.NetworkState
 import core.ProgressBarState
 import core.Queue
 import core.UIComponent
+import di.CUSTOM_TAG
 
 
 abstract class BaseViewModel : ViewModel() {
@@ -19,7 +20,7 @@ abstract class BaseViewModel : ViewModel() {
     }
     fun appendToMessageQueue(uiComponent: UIComponent) {
         if (uiComponent is UIComponent.None) {
-            println("${CUSTOM_TAG}: onTriggerEvent:  ${uiComponent.message}")
+            println("$CUSTOM_TAG: onTriggerEvent:  ${uiComponent.message}")
             return
         }
         val queue = stateBase.value.errorQueue
@@ -36,7 +37,7 @@ abstract class BaseViewModel : ViewModel() {
                 stateBase.value.copy(errorQueue = Queue(mutableListOf())) // force recompose
             stateBase.value = stateBase.value.copy(errorQueue = queue)
         } catch (e: Exception) {
-            println("${CUSTOM_TAG}: removeHeadMessage: Nothing to remove from DialogQueue")
+            println("$CUSTOM_TAG: removeHeadMessage: Nothing to remove from DialogQueue")
         }
     }
     fun onUpdateNetworkState(networkState: NetworkState) {

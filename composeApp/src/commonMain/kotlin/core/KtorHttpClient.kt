@@ -6,11 +6,14 @@ import io.ktor.client.engine.http
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.observer.ResponseObserver
+import io.ktor.client.request.headers
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -76,12 +79,17 @@ object KtorHttpClient {
                 classDiscriminator = "#class"
             })
         }
-        engine {
-
-            // 设置代理服务器
-            proxy = ProxyBuilder.http("http://192.168.5.187:8888")
-
+        defaultRequest {
+            headers {
+                append(HttpHeaders.AcceptLanguage, "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+            }
         }
+//        engine {
+//
+//            // 设置代理服务器
+//            proxy = ProxyBuilder.http("http://192.168.5.187:8888")
+//
+//        }
 //        engine {
 ////            https {
 ////                this.hostnameVerifier = HostnameVerifier.ANY

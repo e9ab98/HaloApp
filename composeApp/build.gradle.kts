@@ -46,6 +46,8 @@ kotlin {
             api(libs.coil3.video)
             implementation(libs.system.ui.controller)
             implementation(libs.accompanist.permissions)
+            // some provider
+            implementation(libs.cryptography.provider.jdk)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -77,11 +79,14 @@ kotlin {
 
             implementation(libs.system.ui.controller)
             implementation(libs.accompanist.permissions)
+            implementation(libs.cryptography.core)
+
         }
         iosMain {
             dependencies {
                 implementation(libs.ktor.darwin.ios)
                 implementation(libs.ktor.ios)
+                implementation(libs.cryptography.provider.apple)
             }
         }
     }
