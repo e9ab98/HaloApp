@@ -32,8 +32,11 @@ class ApiServiceImpl ( private val httpClient: HttpClient):ApiService{
         val cookieString = map.entries.joinToString("; ") { "${it.key}=${it.value}" }
         return httpClient.get(AppDataUtils.getBaseUrl()+ApiService.Public_Key) {
             headers {
-                append(HttpHeaders.Cookie, "browsertc=1; $cookieString")
-                append(HttpHeaders.Cookie, "browsertc=1; $cookieString")
+                append(HttpHeaders.Cookie, "p_uv_id="+map["p_uv_id"])
+                append(HttpHeaders.Cookie, "XSRF-TOKEN="+map["XSRF-TOKEN"])
+                append("X-XSRF-TOKEN", map["XSRF-TOKEN"].toString())
+                 append(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                append(HttpHeaders.Accept, "application/json, text/plain, */*")
             }
             contentType(ContentType.Application.Json)
         }.body()
@@ -43,22 +46,10 @@ class ApiServiceImpl ( private val httpClient: HttpClient):ApiService{
     override suspend fun getLogin(map: Map<String,String>, username: String, password: String,remember_me :Boolean): LoginBean {
                 return httpClient.post(AppDataUtils.getBaseUrl()) {
                     headers {
-                        append(HttpHeaders.Cookie, "p_uv_id="+map["p_uv_id"])
-                        append(HttpHeaders.Cookie, "XSRF-TOKEN="+map["XSRF-TOKEN"])
-                        append("x-xsrf-token", map["XSRF-TOKEN"].toString())
-                        append("sec-ch-ua-mobile", "?1")
-                        append(HttpHeaders.UserAgent, "Mozilla/5.0 (Linux; Android 14; Redmi K20 Pro Build/AP1A.240505.005) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/125.0.6422.113 Mobile Safari/537.36")
+                        append("X-XSRF-TOKEN", map["XSRF-TOKEN"].toString())
+                        append("X-Requested-With", "XMLHttpRequest")
                         append(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                        append(HttpHeaders.Accept, "application/json, text/plain, */*")
-                        append("x-requested-with", "XMLHttpRequest")
-                        append("sec-ch-ua-platform", "\"Android\"")
-                        append("sec-fetch-site", "same-origin")
-                        append("sec-fetch-mode", "cors")
-                        append("sec-fetch-dest", "empty")
-                        append(HttpHeaders.AcceptLanguage, "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
-                        append("priority", "u=1, i")
-                        append(HttpHeaders.Pragma, "no-cache")
-                        append(HttpHeaders.CacheControl, "no-cache")
+                        append(HttpHeaders.Cookie, "XSRF-TOKEN="+map["XSRF-TOKEN"])
             }
             url {
                 encodedPath += ApiService.LOGIN
