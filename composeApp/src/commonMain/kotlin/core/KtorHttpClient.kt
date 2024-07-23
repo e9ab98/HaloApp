@@ -71,7 +71,7 @@ object KtorHttpClient {
         }
         install(ContentNegotiation) {
             json(Json {
-                explicitNulls = false
+                explicitNulls = true
                 ignoreUnknownKeys = true
                 isLenient = true
                 prettyPrint = true

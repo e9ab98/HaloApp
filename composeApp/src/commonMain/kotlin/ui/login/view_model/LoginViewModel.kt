@@ -10,6 +10,7 @@ import common.randomUUID
 import core.AppDataStore
 import core.ConfigKey
 import core.ProgressBarState
+import core.UIComponent
 import core.ViewState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -47,7 +48,7 @@ class LoginViewModel(private val loginRepository: LoginRepository,private val ap
                             }
                         }
                         is ViewState.Success -> {
-
+                            appendToMessageQueue(UIComponent.DialogSimple(it.data.title,it.data.detail))
                         }
                         else -> {
                             println("ViewState.Error:"+it.toString())

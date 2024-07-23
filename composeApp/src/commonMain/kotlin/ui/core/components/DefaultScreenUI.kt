@@ -104,6 +104,11 @@ fun DefaultScreenUI(
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
+                    if (uiComponent is UIComponent.DialogSimple) {
+                        uiComponent.description.Alert(uiComponent.title) {
+                            events(LoginEvent.OnRemoveHeadFromQueue)
+                        }
+                    }
                 }
             }
 

@@ -25,4 +25,6 @@ sealed class UIComponent {
 
 
 
+    data class Idle(val string: String): UIComponent()
+
 }
